@@ -1,3 +1,3 @@
 <?php
 
-return new \Nette\Caching\Storages\MemoryStorage;
+benchmark(new \Nette\Caching\Storages\MemoryStorage);

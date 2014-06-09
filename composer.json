@@ -1,5 +1,13 @@
 {
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "http://github.com/VladaHejda/NetteDatabaseStorage.git"
+		}
+	],
+
 	"require": {
-		"nette/caching": "~2.2"
+		"nette/caching": "~2.2",
+		"VladaHejda/NetteDatabaseStorage": "dev-master"
 	}
 }

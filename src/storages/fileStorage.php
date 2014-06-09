@@ -1,3 +1,3 @@
 <?php
 
-return new \Nette\Caching\Storages\FileStorage('../temp');
+benchmark(new \Nette\Caching\Storages\FileStorage(__DIR__ . '/../../temp'));

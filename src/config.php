@@ -5,4 +5,5 @@ $storageInitializers = [
 	__DIR__ . '/storages/memcachedStorage.php',
 	__DIR__ . '/storages/memoryStorage.php',
 	__DIR__ . '/storages/SQLiteStorage.php',
+	__DIR__ . '/storages/NetteDatabaseStorage.mysql.php',
 ];

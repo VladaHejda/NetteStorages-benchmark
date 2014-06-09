@@ -1,3 +1,3 @@
 <?php
 
-return new \Nette\Caching\Storages\MemcachedStorage;
+benchmark(new \Nette\Caching\Storages\MemcachedStorage);
