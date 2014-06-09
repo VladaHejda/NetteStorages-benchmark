@@ -1,10 +1,23 @@
 <?php
 
-$options = getopt('cts');
+echo "\n";
+
+$longOptions = ['help'];
+$options = getopt('ctsl:', $longOptions);
 
 $colorOutput = isset($options['c']);
 $traceErrors = isset($options['t']);
 $shuffleStorages = isset($options['s']);
+$defaultLoops = 100;
+if (isset($options['l'])) {
+	$loops = (int) $options['l'];
+	if ($loops < 1) {
+		echo red("Loops must be positive integer.\n");
+		die;
+	}
+} else {
+	$loops = $defaultLoops;
+}
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/config.php';
@@ -20,12 +33,36 @@ if ($colorOutput) {
 	require_once __DIR__ . '/color_shortcuts.php';
 }
 
+
+// HELP
+if (isset($options['help'])) {
+	echo cyan("Nette storages benchmark.\n")
+		. "Usage:\n\n"
+		. yellow('-c') . "             colored output\n"
+		. yellow('-l <integer>') . "   test loops count (higher number, longer execution; default $defaultLoops)\n"
+		. yellow('-s') . "             shuffle storage test order\n"
+		. yellow('-t') . "             print trace on error\n"
+		. yellow('--help') . "         this help screen\n"
+	;
+	die;
+}
+
+
 if (!isset($storageInitializers) || !is_array($storageInitializers)) {
 	die ('Please, initialize $storageInitializers array in config.php.');
 }
 
+$keys = [];
+$chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+$max = strlen($chars) -1;
+for ($i = 0; $i < 10; $i++) {
+	$key = '';
+	for ($j = 0; $j < 10; $j++) {
+		$key .= $chars[rand(0, $max)];
+	}
+	$keys[] = $key;
+}
 $keys = range('a', 'z');
-$cycles = 100;
 
 set_error_handler(function($code, $message, $file, $line){
 	throw new ErrorException($message, $code, 1, $file, $line);
@@ -54,7 +91,7 @@ foreach ($storageInitializers as $initializer) {
 	$start = microtime(TRUE);
 	try {
 		$written = FALSE;
-		for ($i = 0; $i < $cycles; $i++) {
+		for ($i = 0; $i < $loops; $i++) {
 			foreach ($keys as $key) {
 				$value = $storage->read($key);
 				if ($written && $value !== md5($key)) {
