@@ -8,25 +8,11 @@ $longOptions = ['help'];
 $options = getopt('ctsl:', $longOptions);
 
 
-// HELP
-if (isset($options['help'])) {
-	echo cyan("Nette storages benchmark.\n")
-		. "Usage:\n\n"
-		. yellow('-c') . "             colored output\n"
-		. yellow('-l <integer>') . "   test loops count (higher number, longer execution; default $defaultLoops)\n"
-		. yellow('-s') . "             shuffle storage test order\n"
-		. yellow('-t') . "             print trace on error\n"
-		. yellow('--help') . "         this help screen\n"
-	;
-	die;
-}
-
-
 // OPTIONS
 $colorOutput = isset($options['c']);
 $traceErrors = isset($options['t']);
 $shuffleStorages = isset($options['s']);
-$defaultLoops = 100;
+$defaultLoops = 10;
 if (isset($options['l'])) {
 	$loops = (int) $options['l'];
 	if ($loops < 1) {
@@ -60,6 +46,20 @@ if ($colorOutput) {
 }
 
 
+// HELP
+if (isset($options['help'])) {
+	echo cyan("Nette storages benchmark.\n")
+		. "Usage:\n\n"
+		. yellow('-c') . "             colored output\n"
+		. yellow('-l <integer>') . "   test loops count (higher number, longer execution; default $defaultLoops)\n"
+		. yellow('-s') . "             shuffle storage test order\n"
+		. yellow('-t') . "             print trace on error\n"
+		. yellow('--help') . "         this help screen\n"
+	;
+	die;
+}
+
+
 // TESTING DATA
 $keys = [];
 $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -80,5 +80,22 @@ set_error_handler(function($code, $message, $file, $line){
 
 // TEST
 foreach ($storageInitializers as $initializer) {
-	include $initializer;
+
+	ob_start();
+	$start = microtime(TRUE);
+	try {
+		include $initializer;
+
+		$duration = microtime(TRUE) - $start;
+		echo yellow(preg_replace('#^.+/([^/]+)\.php$#', '$1', $initializer) . ": $duration s.\n");
+
+	} catch (Exception $e) {
+		echo red ('Error (' . $e->getCode() . '): ' . $e->getMessage() . ' in ' . $e->getFile() . ' on line '
+			. $e->getLine() . "\n");
+		if ($traceErrors) {
+			echo $e->getTraceAsString() . "\n\n";
+		}
+	}
+
+	ob_end_flush();
 }

@@ -1,9 +1,10 @@
 <?php
 
 $storageInitializers = [
-	__DIR__ . '/storages/fileStorage.php',
-	__DIR__ . '/storages/memcachedStorage.php',
-	__DIR__ . '/storages/memoryStorage.php',
+	__DIR__ . '/storages/FileStorage.php',
+	__DIR__ . '/storages/MemcachedStorage.php',
+	__DIR__ . '/storages/MemoryStorage.php',
 	__DIR__ . '/storages/SQLiteStorage.php',
 	__DIR__ . '/storages/NetteDatabaseStorage.mysql.php',
+	__DIR__ . '/storages/NetteDatabaseStorage.postgres.php',
 ];
